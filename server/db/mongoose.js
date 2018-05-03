@@ -4,7 +4,7 @@ mongoose.Promise = global.Promise;
 
 var connectPath;
 
-const dbUser = 'mLabDBQLU$ER';
+const dbUser = 'mLabDBQLU\$ER';
 const dbPassword = 'not3db4ddk!';
 
 if (process.env.PORT) {
