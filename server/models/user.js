@@ -50,6 +50,26 @@ UserSchema.methods.generateAuthToken = function () {
     });
 };
 
+UserSchema.statics.findByToken = function (token) {
+    var User = this; // Instance methods get called with the individual document, model methods get called with the model as the this binding
+    var decoded;
+
+    try {
+        decoded = jwt.verify(token, 'abc123');
+    } catch (e) {
+        // return new Promise((resolve, reject) => {
+        //     reject();  // THis means that by this Promise, the success case in server.js will never fire // User.findByToken => catch call
+        // })
+        return Promise.reject(); // The same as above;
+    }
+
+    return User.findOne({
+        '_id': decoded._id,
+        'tokens.token': token,
+        'tokens.access': 'auth'
+    });
+}; // .statics everything you add on it turns to a model method as oppose an instance method
+
 const User = mongoose.model('User', UserSchema);
 
 module.exports = {User};

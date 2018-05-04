@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const {mongoose} = require('./db/mongoose');
 const {Todo} = require('./models/todo');
 const {User} = require('./models/user');
+var {authenticate} = require('./middleware/authenticate');
 
 const app = express();
 const port = process.env.PORT;
@@ -102,13 +103,16 @@ app.post('/users', (req, res) => {
     var body = _.pick(req.body, ['email', 'password']);
     var user = new User(body);
 
-    user.save().then(() => {
-        return user.generateAuthToken();
-    }).then((token) => {
+    user.generateAuthToken().then((token) => {  // a bit changed https://www.udemy.com/the-complete-nodejs-developer-course-2/learn/v4/questions/2434110
         res.header('x-auth', token).send(user);
     }).catch((e) => {
         res.status(400).send(e);
     });
+});
+
+
+app.get('/users/me', authenticate, (req, res) => {
+    res.send(req.user);
 });
 
 app.listen(port, () => {
