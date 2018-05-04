@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
+const bcrypt = require('bcryptjs');
 
 const UserSchema = new mongoose.Schema({
     email: {
@@ -69,6 +70,22 @@ UserSchema.statics.findByToken = function (token) {
         'tokens.access': 'auth'
     });
 }; // .statics everything you add on it turns to a model method as oppose an instance method
+
+UserSchema.pre('save', function (next) {  // you have to call next somewhere inside your function. If not, the middleware is never be complete and program is going to crash
+    var user = this;
+
+    // Check if password gets updated
+    if (user.isModified('password')) {
+        bcrypt.genSalt(10, (err, salt) => {
+            bcrypt.hash(user.password, salt, (err, hash) => {
+                user.password = hash;
+                next();
+            });
+        });
+    } else {
+        next();
+    }
+});
 
 const User = mongoose.model('User', UserSchema);
 
