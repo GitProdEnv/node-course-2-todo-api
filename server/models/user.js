@@ -71,6 +71,29 @@ UserSchema.statics.findByToken = function (token) {
     });
 }; // .statics everything you add on it turns to a model method as oppose an instance method
 
+UserSchema.statics.findByCredentials = function (email, password) {
+    var User = this;
+
+    return User.findOne({email}).then((user) => {
+        if (!user) {
+            return Promise.reject();
+        }
+
+        // all the bcrypt.js libraries only support callbacks, but we want still have Promises
+        return new Promise((resolve, reject) => {
+            bcrypt.compare(password, user.password, (err, res) => {
+                if (res) {
+                    resolve(user);
+                } else {
+                    reject();
+                }
+            });
+        }).catch((e) => {
+
+        });
+    });
+};
+
 UserSchema.pre('save', function (next) {  // you have to call next somewhere inside your function. If not, the middleware is never be complete and program is going to crash
     var user = this;
 
