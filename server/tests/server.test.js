@@ -299,7 +299,7 @@ describe('POST /users/login', () => {
                 User.findById(users[1]._id).then((user) => {
                     expect(user.tokens.length).toBe(0);
                     done();
-                }).catch((e) => done(e)); 
+                }).catch((e) => done(e));
             })
     });
 });

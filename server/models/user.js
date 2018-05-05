@@ -51,6 +51,16 @@ UserSchema.methods.generateAuthToken = function () {
     });
 };
 
+UserSchema.methods.removeToken = function (token) {
+    var user = this;
+
+    return user.update({
+        $pull: {  // $pull let's you remove items from an array which matches certain criteria
+            tokens: {token} // if the token in the argument does matches in the array it is going to remove it. Not just the token property, sondern the entire object, with means the id, the access property and the token property
+        }
+    });
+};
+
 UserSchema.statics.findByToken = function (token) {
     var User = this; // Instance methods get called with the individual document, model methods get called with the model as the this binding
     var decoded;
@@ -88,9 +98,7 @@ UserSchema.statics.findByCredentials = function (email, password) {
                     reject();
                 }
             });
-        }).catch((e) => {
-
-        });
+        })
     });
 };
 
