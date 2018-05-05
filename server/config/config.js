@@ -1,6 +1,6 @@
 const env = process.env.NODE_ENV || 'development';  // npm start script ala node server/server.js will default to development;
 
-if (env === 'development' || env === 'test' || env === 'production') {
+if (env === 'development' || env === 'test') {  // production we will never get from config.json; Config.json is not passed to github (see gitignore file) we have to set heroku config:set JWT_SECRET=XXXX and heroku config:set MONGODB_URI='wwwww' manually
     var config = require('./config.json');
     var envConfig = config[env];
 

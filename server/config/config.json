@@ -1,0 +1,16 @@
+{
+  "test": {
+    "PORT": 3000,
+    "MONGODB_URI": "mongodb://localhost:27017/TodoAppTest",
+    "JWT_SECRET": "aösowmy-bnämüEasEAasd2&789?$§xcAA3332"
+  },
+  "development": {
+    "PORT": 3000,
+    "MONGODB_URI": "mongodb://localhost:27017/TodoApp",
+    "JWT_SECRET": "aösowmy-bnämüEasEAasd2&789?$§xcAAZZsx"
+  },
+  "production": {
+    "MONGODB_URI": "mongodb://mLabDBQLU%24ER:not3db4ddk!@ds111410.mlab.com:11410/node-to-api",
+    "JWT_SECRET": "aösowmy-bnämüEasEAasd2&789?$§xcAAZZsx44::1"
+  }
+}
