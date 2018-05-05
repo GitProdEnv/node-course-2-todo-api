@@ -126,7 +126,7 @@ describe('DELETE /todos/:id', (done) => {
 
                 // query database using findById
                 Todo.findById(hexId).then((todo) => {
-                    expect(todo).toNotExist();
+                    expect(todo).toBeFalsy();
                     done();
                 }).catch((e) => done(e));
             });
@@ -145,7 +145,7 @@ describe('DELETE /todos/:id', (done) => {
                 }
 
                 Todo.findById(hexId).then((todo) => {
-                    expect(todo).toExist();
+                    expect(todo).toBeTruthy();
                     done();
                 }).catch((e) => done(e));
             });
@@ -187,7 +187,7 @@ describe('PATCH /todos/:id', () => {
             .expect((res) => {
                 expect(res.body.todo.text).toBe(text);
                 expect(res.body.todo.completed).toBe(false);
-                expect(res.body.todo.completedAt).toNotExist();
+                expect(res.body.todo.completedAt).toBeFalsy();
             })
             .end(done);
     });
@@ -222,7 +222,7 @@ describe('PATCH /todos/:id', () => {
             .expect((res) => {
                 expect(res.body.todo.text).toBe(text);
                 expect(res.body.todo.completed).toBe(true);
-                expect(res.body.todo.completedAt).toBeA('number');
+                expect(typeof res.body.todo.completedAt).toBe('number');
             })
             .end(done);
     });
@@ -264,10 +264,10 @@ describe('POST /users', () => {
             .send({email, password})
             .expect(200)
             .expect((res) => {
-                expect(res.headers['x-auth']).toExist();  // We need a bracket notation since our header name has a hyphen in it which would be invalid having a dot notation
-                expect(res.body._id).toExist();
+                expect(res.headers['x-auth']).toBeTruthy();  // We need a bracket notation since our header name has a hyphen in it which would be invalid having a dot notation
+                expect(res.body._id).toBeTruthy();
                 expect(res.body.email).toBe(email);
-                expect(res.body.password).toNotExist();
+                expect(res.body.password).toBeFalsy();
             })
             .end((err) => { // Even go further. Instead of passing done we can query the db.
                 if (err) {
@@ -275,8 +275,8 @@ describe('POST /users', () => {
                 }
 
                 User.findOne({email}).then((user) => {
-                    expect(user).toExist();
-                    expect(user.password).toNotBe(password);
+                    expect(user).toBeTruthy();
+                    expect(user.password).not.toBe(password);
                     done();
                 }).catch((e) => done(e)); // If one of these assertions fails, it will look for a catch case it never finds one => done() get never gets called and test timeout no usefuseful error message
             });
@@ -318,7 +318,7 @@ describe('POST /users/login', () => {
             })
             .expect(200)
             .expect((res) => {
-                expect(res.header['x-auth']).toExist();
+                expect(res.header['x-auth']).toBeTruthy();
             })
             .end((err, res) => {
                 if (err) {
@@ -327,7 +327,10 @@ describe('POST /users/login', () => {
 
                 User.findById(users[1]._id).then((user) => {
                     // console.log(user);
-                    expect(user.tokens[1]).toInclude({ // We check the second element in the tokens property (an array) because we added another token to the array. This is the purpose of this function. WE have a seed + this function adds an additional token;
+                    // The old expect version was able to correctly parse out all of the stuff from mongoose that is on user, the new version is going to throw an Error.
+                    // That's why we use .toObject() which is gonna return the raw user data with none of these internal methods or inner workings mongoose present. This is just the user object
+                    // which we are gonna see in the database.
+                    expect(user.toObject().tokens[1]).toMatchObject({ // We check the second element in the tokens property (an array) because we added another token to the array. This is the purpose of this function. WE have a seed + this function adds an additional token;
                         access: 'auth',
                         token: res.headers['x-auth']
                     });
@@ -345,7 +348,7 @@ describe('POST /users/login', () => {
             })
             .expect(400)
             .expect((res) => {
-                expect(res.header['x-auth']).toNotExist();
+                expect(res.header['x-auth']).toBeFalsy();
             })
             .end((err, res) => {
                 if (err) {
