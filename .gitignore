@@ -51,3 +51,4 @@ fabric.properties
 .idea/httpRequests
 
 node_modules/
+server/config/config.json  # Never send this to Github!!
